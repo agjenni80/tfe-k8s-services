@@ -2,18 +2,18 @@ terraform {
   required_version = ">= 0.10.1"
 }
 
-data "terraform_remote_state" "k8s-cluster" {
+/*data "terraform_remote_state" "k8s-cluster" {
   backend = "atlas"
   config {
     name = "${var.tfe-organization}/${var.k8s-cluster-workspace}"
   }
-}
+}*/
 
 provider "kubernetes" {
-  host = "${data.terraform_remote_state.k8s-cluster.k8s_endpoint}"
-  client_certificate = "${base64decode(data.terraform_remote_state.k8s-cluster.k8s_master_auth_client_certificate)}"
-  client_key = "${base64decode(data.terraform_remote_state.k8s-cluster.k8s_master_auth_client_key)}"
-  cluster_ca_certificate = "${base64decode(data.terraform_remote_state.k8s-cluster.k8s_master_auth_cluster_ca_certificate)}"
+  host = "${var.k8s_endpoint}"
+  client_certificate = "${base64decode(var.k8s_master_auth_client_certificate)}"
+  client_key = "${base64decode(var.k8s_master_auth_client_key)}"
+  cluster_ca_certificate = "${base64decode(var.k8s_master_auth_cluster_ca_certificate)}"
 }
 
 resource "kubernetes_service_account" "cats-and-dogs" {
