@@ -34,16 +34,24 @@ resource "vault_generic_secret" "role" {
   EOT
 }
 
-resource "kubernetes_service_account" "cats-and-dogs" {
+resource "kubernetes_namespace" "cats-and-dogs" {
   metadata {
     name = "cats-and-dogs"
   }
   depends_on = ["vault_generic_secret.role", "null_resource.auth_config" ]
 }
 
+resource "kubernetes_service_account" "cats-and-dogs" {
+  metadata {
+    name = "cats-and-dogs"
+    namespace = "${kubernetes_namespace.cats-and-dogs.metadata.0.name}"
+  }
+}
+
 resource "kubernetes_pod" "cats-and-dogs-backend" {
   metadata {
     name = "cats-and-dogs-backend"
+    namespace = "${kubernetes_namespace.cats-and-dogs.metadata.0.name}"
     labels {
       App = "cats-and-dogs-backend"
     }
@@ -77,6 +85,7 @@ resource "kubernetes_pod" "cats-and-dogs-backend" {
 resource "kubernetes_service" "cats-and-dogs-backend" {
   metadata {
     name = "cats-and-dogs-backend"
+    namespace = "${kubernetes_namespace.cats-and-dogs.metadata.0.name}"
   }
   spec {
     selector {
@@ -92,6 +101,7 @@ resource "kubernetes_service" "cats-and-dogs-backend" {
 resource "kubernetes_pod" "cats-and-dogs-frontend" {
   metadata {
     name = "cats-and-dogs-frontend"
+    namespace = "${kubernetes_namespace.cats-and-dogs.metadata.0.name}"
     labels {
       App = "cats-and-dogs-frontend"
     }
@@ -130,6 +140,7 @@ resource "kubernetes_pod" "cats-and-dogs-frontend" {
 resource "kubernetes_service" "cats-and-dogs-frontend" {
   metadata {
     name = "cats-and-dogs-frontend"
+    namespace = "${kubernetes_namespace.cats-and-dogs.metadata.0.name}"
   }
   spec {
     selector {
