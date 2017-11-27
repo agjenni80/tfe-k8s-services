@@ -38,7 +38,7 @@ resource "kubernetes_service_account" "cats-and-dogs" {
   metadata {
     name = "cats-and-dogs"
   }
-  depends_on = ["vault_generic_secret.role", null_resource.auth_config ]
+  depends_on = ["vault_generic_secret.role", "null_resource.auth_config" ]
 }
 
 resource "kubernetes_pod" "cats-and-dogs-backend" {
