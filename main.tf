@@ -18,7 +18,7 @@ provider "kubernetes" {
 
 resource "null_resource" "auth_config" {
   provisioner "local-exec" {
-    command = "curl --header \"X-Vault-Token: $VAULT_TOKEN\" --header \"Content-Type: application/json\" --request POST --data '{ \"kubernetes_host\": \"https://${var.k8s_endpoint}:8443\", \"token_reviewer_jwt\": \"reviewer_service_account_jwt\", \"kubernetes_ca_cert\": \"${chomp(replace(base64decode(var.k8s_master_auth_cluster_ca_certificate), "\n", "\\n"))}\" }' $VAULT_ADDR/v1/auth/${var.vault-k8s-auth-backend}/config"
+    command = "curl --header \"X-Vault-Token: $VAULT_TOKEN\" --header \"Content-Type: application/json\" --request POST --data '{ \"kubernetes_host\": \"https://${var.k8s_endpoint}:8443\",  \"kubernetes_ca_cert\": \"${chomp(replace(base64decode(var.k8s_master_auth_cluster_ca_certificate), "\n", "\\n"))}\" }' $VAULT_ADDR/v1/auth/${var.vault-k8s-auth-backend}/config"
   }
 }
 
