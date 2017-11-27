@@ -13,3 +13,7 @@ variable "k8s_master_auth_client_key" {
 variable "k8s_master_auth_cluster_ca_certificate" {
   description = "k8s_master_auth_cluster_ca_certificate"
 }
+
+variable "vault-k8s-auth-backend" {
+  description = "vault-k8s-auth-backend"
+}

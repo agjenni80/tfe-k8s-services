@@ -37,7 +37,7 @@ resource "kubernetes_pod" "cats-and-dogs-backend" {
       command = ["/app/start_redis.sh"]
       env = {
         name = "VAULT_K8S_BACKEND"
-        value = "${data.terraform_remote_state.k8s-cluster.vault-k8s-auth-backend}"
+        value = "${var.vault-k8s-auth-backend}"
       }
       env = {
         name = "K8S_TOKEN"
@@ -88,7 +88,7 @@ resource "kubernetes_pod" "cats-and-dogs-frontend" {
       }
       env = {
         name = "VAULT_K8S_BACKEND"
-        value = "${data.terraform_remote_state.k8s-cluster.vault-k8s-auth-backend}"
+        value = "${var.vault-k8s-auth-backend}"
       }
       env = {
         name = "K8S_TOKEN"
