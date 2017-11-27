@@ -16,10 +16,29 @@ provider "kubernetes" {
   cluster_ca_certificate = "${base64decode(var.k8s_master_auth_cluster_ca_certificate)}"
 }
 
+resource "null_resource" "auth_config" {
+  provisioner "local-exec" {
+    command = "curl --header \"X-Vault-Token: $VAULT_TOKEN\" --header \"Content-Type: application/json\" --request POST --data '{ \"kubernetes_host\": \"https://${var.k8s_endpoint}:443\", \"token_reviewer_jwt\": \"reviewer_service_account_jwt\", \"kubernetes_ca_cert\": \"${chomp(replace(base64decode(var.k8s_master_auth_cluster_ca_certificate), "\n", "\\n"))}\" }' $VAULT_ADDR/v1/auth/${var.vault-k8s-auth-backend}/config"
+  }
+}
+
+resource "vault_generic_secret" "role" {
+  path = "auth/${var.vault-k8s-auth-backend}/role/demo"
+  data_json = <<EOT
+  {
+    "bound_service_account_names": "cats-and-dogs",
+    "bound_service_account_namespaces": "default",
+    "policies": "admins",
+    "ttl": "2h"
+  }
+  EOT
+}
+
 resource "kubernetes_service_account" "cats-and-dogs" {
   metadata {
     name = "cats-and-dogs"
   }
+  depends_on = ["vault_generic_secret.role", null_resource.auth_config ]
 }
 
 resource "kubernetes_pod" "cats-and-dogs-backend" {
