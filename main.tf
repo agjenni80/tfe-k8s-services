@@ -9,7 +9,7 @@ terraform {
   }
 }*/
 
-provider "vault" {}
+#provider "vault" {}
 
 provider "kubernetes" {
   host = "${var.k8s_endpoint}"
@@ -18,14 +18,11 @@ provider "kubernetes" {
   cluster_ca_certificate = "${base64decode(var.k8s_master_auth_cluster_ca_certificate)}"
 }
 
-resource "null_resource" "auth_config" {
-  /*provisioner "local-exec" {
-    command = "curl --header \"X-Vault-Token: $VAULT_TOKEN\" --header \"Content-Type: application/json\" --request POST --data '{ \"kubernetes_host\": \"${var.k8s_endpoint}\", \"token_reviewer_jwt\": \"${var.token_value}\",  \"kubernetes_ca_cert\": \"${chomp(replace(base64decode(var.k8s_master_auth_cluster_ca_certificate), "\n", "\\n"))}\" }' $VAULT_ADDR/v1/auth/${var.vault-k8s-auth-backend}/config"
-  }*/
+/*resource "null_resource" "auth_config" {
   provisioner "local-exec" {
-    command = "pwd"
+    command = "curl --header \"X-Vault-Token: $VAULT_TOKEN\" --header \"Content-Type: application/json\" --request POST --data '{ \"kubernetes_host\": \"${var.k8s_endpoint}\", \"token_reviewer_jwt\": \"${var.token_value}\",  \"kubernetes_ca_cert\": \"${chomp(replace(base64decode(var.k8s_master_auth_cluster_ca_certificate), "\n", "\\n"))}\" }' $VAULT_ADDR/v1/auth/${var.vault-k8s-auth-backend}/config"
   }
-}
+}*/
 
 /*resource "vault_generic_secret" "role" {
   path = "auth/${var.vault-k8s-auth-backend}/role/demo"
