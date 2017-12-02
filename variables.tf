@@ -17,3 +17,11 @@ variable "k8s_master_auth_cluster_ca_certificate" {
 variable "vault-k8s-auth-backend" {
   description = "vault-k8s-auth-backend"
 }
+
+variable "token_name" {
+  description = "name of kubernetes token for cats-and-dogs service account"
+}
+
+/*variable "token_value" {
+  description = "value of kubernetes token for cats-and-dogs service account"
+}*/

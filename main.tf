@@ -16,9 +16,9 @@ provider "kubernetes" {
   cluster_ca_certificate = "${base64decode(var.k8s_master_auth_cluster_ca_certificate)}"
 }
 
-resource "null_resource" "auth_config" {
+/*resource "null_resource" "auth_config" {
   provisioner "local-exec" {
-    command = "curl --header \"X-Vault-Token: $VAULT_TOKEN\" --header \"Content-Type: application/json\" --request POST --data '{ \"kubernetes_host\": \"${var.k8s_endpoint}\",  \"kubernetes_ca_cert\": \"${chomp(replace(base64decode(var.k8s_master_auth_cluster_ca_certificate), "\n", "\\n"))}\" }' $VAULT_ADDR/v1/auth/${var.vault-k8s-auth-backend}/config"
+    command = "curl --header \"X-Vault-Token: $VAULT_TOKEN\" --header \"Content-Type: application/json\" --request POST --data '{ \"kubernetes_host\": \"${var.k8s_endpoint}\", \"token_reviewer_jwt\": \"${var.token_value}\",  \"kubernetes_ca_cert\": \"${chomp(replace(base64decode(var.k8s_master_auth_cluster_ca_certificate), "\n", "\\n"))}\" }' $VAULT_ADDR/v1/auth/${var.vault-k8s-auth-backend}/config"
   }
 }
 
@@ -32,16 +32,16 @@ resource "vault_generic_secret" "role" {
     "ttl": "2h"
   }
   EOT
-}
+}*/
 
 /*resource "kubernetes_namespace" "cats-and-dogs" {
   metadata {
     name = "cats-and-dogs"
   }
   depends_on = ["vault_generic_secret.role", "null_resource.auth_config" ]
-}*/
+}
 
-/*resource "kubernetes_service_account" "cats-and-dogs" {
+resource "kubernetes_service_account" "cats-and-dogs" {
   metadata {
     name = "cats-and-dogs"
     namespace = "${kubernetes_namespace.cats-and-dogs.metadata.0.name}"
@@ -70,7 +70,7 @@ resource "kubernetes_pod" "cats-and-dogs-backend" {
         name = "K8S_TOKEN"
         value_from {
           secret_key_ref {
-            name = "cats-and-dogs-token-mjbl9"
+            name = "${var.token_name}"
             key = "token"
           }
         }
@@ -80,6 +80,7 @@ resource "kubernetes_pod" "cats-and-dogs-backend" {
       }
     }
   }
+  #depends_on = ["vault_generic_secret.role", "null_resource.auth_config" ]
 }
 
 resource "kubernetes_service" "cats-and-dogs-backend" {
@@ -123,7 +124,7 @@ resource "kubernetes_pod" "cats-and-dogs-frontend" {
         name = "K8S_TOKEN"
         value_from {
           secret_key_ref {
-            name = "cats-and-dogs-token-mjbl9"
+            name = "${var.token_name}"
             key = "token"
           }
         }
