@@ -9,6 +9,8 @@ terraform {
   }
 }*/
 
+provider "vault" {}
+
 provider "kubernetes" {
   host = "${var.k8s_endpoint}"
   client_certificate = "${base64decode(var.k8s_master_auth_client_certificate)}"
@@ -16,13 +18,16 @@ provider "kubernetes" {
   cluster_ca_certificate = "${base64decode(var.k8s_master_auth_cluster_ca_certificate)}"
 }
 
-/*resource "null_resource" "auth_config" {
-  provisioner "local-exec" {
+resource "null_resource" "auth_config" {
+  /*provisioner "local-exec" {
     command = "curl --header \"X-Vault-Token: $VAULT_TOKEN\" --header \"Content-Type: application/json\" --request POST --data '{ \"kubernetes_host\": \"${var.k8s_endpoint}\", \"token_reviewer_jwt\": \"${var.token_value}\",  \"kubernetes_ca_cert\": \"${chomp(replace(base64decode(var.k8s_master_auth_cluster_ca_certificate), "\n", "\\n"))}\" }' $VAULT_ADDR/v1/auth/${var.vault-k8s-auth-backend}/config"
+  }*/
+  provisioner "local-exec" {
+    command = "pwd"
   }
 }
 
-resource "vault_generic_secret" "role" {
+/*resource "vault_generic_secret" "role" {
   path = "auth/${var.vault-k8s-auth-backend}/role/demo"
   data_json = <<EOT
   {
