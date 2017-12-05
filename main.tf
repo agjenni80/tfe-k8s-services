@@ -1,11 +1,11 @@
 terraform {
-  required_version = ">= 0.10.1"
+  required_version = ">= 0.11.0"
 }
 
 data "terraform_remote_state" "k8s-cluster" {
   backend = "atlas"
   config {
-    name = "${var.tfe-organization}/${var.k8s-cluster-workspace}"
+    name = "${var.tfe_organization}/${var.k8s_cluster_workspace}"
   }
 }
 
@@ -37,7 +37,11 @@ resource "kubernetes_pod" "cats-and-dogs-backend" {
       command = ["/app/start_redis.sh"]
       env = {
         name = "VAULT_K8S_BACKEND"
-        value = "${data.terraform_remote_state.k8s-cluster.vault-k8s-auth-backend}"
+        value = "${data.terraform_remote_state.k8s-cluster.vault_k8s_auth_backend}"
+      }
+      env = {
+        name = "VAULT_USER"
+        value = "${data.terraform_remote_state.k8s_cluster.vault_user}"
       }
       env = {
         name = "K8S_TOKEN"
@@ -88,7 +92,11 @@ resource "kubernetes_pod" "cats-and-dogs-frontend" {
       }
       env = {
         name = "VAULT_K8S_BACKEND"
-        value = "${data.terraform_remote_state.k8s-cluster.vault-k8s-auth-backend}"
+        value = "${data.terraform_remote_state.k8s-cluster.vault_k8s_auth_backend}"
+      }
+      env = {
+        name = "VAULT_USER"
+        value = "${data.terraform_remote_state.k8s_cluster.vault_user}"
       }
       env = {
         name = "K8S_TOKEN"
