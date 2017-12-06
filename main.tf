@@ -1,15 +1,6 @@
 terraform {
-  required_version = ">= 0.10.1"
+  required_version = ">= 0.11.0"
 }
-
-/*data "terraform_remote_state" "k8s-cluster" {
-  backend = "atlas"
-  config {
-    name = "${var.tfe-organization}/${var.k8s-cluster-workspace}"
-  }
-}*/
-
-#provider "vault" {}
 
 provider "kubernetes" {
   host = "${var.k8s_endpoint}"
@@ -17,24 +8,6 @@ provider "kubernetes" {
   client_key = "${base64decode(var.k8s_master_auth_client_key)}"
   cluster_ca_certificate = "${base64decode(var.k8s_master_auth_cluster_ca_certificate)}"
 }
-
-/*resource "null_resource" "auth_config" {
-  provisioner "local-exec" {
-    command = "curl --header \"X-Vault-Token: $VAULT_TOKEN\" --header \"Content-Type: application/json\" --request POST --data '{ \"kubernetes_host\": \"${var.k8s_endpoint}\", \"token_reviewer_jwt\": \"${var.token_value}\",  \"kubernetes_ca_cert\": \"${chomp(replace(base64decode(var.k8s_master_auth_cluster_ca_certificate), "\n", "\\n"))}\" }' $VAULT_ADDR/v1/auth/${var.vault-k8s-auth-backend}/config"
-  }
-}*/
-
-/*resource "vault_generic_secret" "role" {
-  path = "auth/${var.vault-k8s-auth-backend}/role/demo"
-  data_json = <<EOT
-  {
-    "bound_service_account_names": "cats-and-dogs",
-    "bound_service_account_namespaces": "cats-and-dogs",
-    "policies": "admins",
-    "ttl": "2h"
-  }
-  EOT
-}*/
 
 /*resource "kubernetes_namespace" "cats-and-dogs" {
   metadata {
@@ -66,7 +39,11 @@ resource "kubernetes_pod" "cats-and-dogs-backend" {
       command = ["/app/start_redis.sh"]
       env = {
         name = "VAULT_K8S_BACKEND"
-        value = "${var.vault-k8s-auth-backend}"
+        value = "${var.vault_k8s_auth_backend}"
+      }
+      env = {
+        name = "VAULT_USER"
+        value = "${var.vault_user}"
       }
       env = {
         name = "K8S_TOKEN"
@@ -82,7 +59,6 @@ resource "kubernetes_pod" "cats-and-dogs-backend" {
       }
     }
   }
-  #depends_on = ["vault_generic_secret.role", "null_resource.auth_config" ]
 }
 
 resource "kubernetes_service" "cats-and-dogs-backend" {
@@ -120,7 +96,11 @@ resource "kubernetes_pod" "cats-and-dogs-frontend" {
       }
       env = {
         name = "VAULT_K8S_BACKEND"
-        value = "${var.vault-k8s-auth-backend}"
+        value = "${var.vault_k8s_auth_backend}"
+      }
+      env = {
+        name = "VAULT_USER"
+        value = "${var.vault_user}"
       }
       env = {
         name = "K8S_TOKEN"
