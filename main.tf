@@ -86,6 +86,7 @@ resource "kubernetes_pod" "cats-and-dogs-frontend" {
     service_account_name = "${kubernetes_service_account.cats-and-dogs.metadata.0.name}"
     container {
       image = "rberlind/cats-and-dogs-frontend:k8s-auth"
+      image_pull_policy = "Always"
       name  = "cats-and-dogs-frontend"
       env = {
         name = "REDIS"
