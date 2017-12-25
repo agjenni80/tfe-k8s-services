@@ -34,7 +34,7 @@ resource "kubernetes_pod" "cats-and-dogs-backend" {
     container {
       image = "rberlind/cats-and-dogs-backend:k8s-auth"
       name  = "cats-and-dogs-backend"
-      command = ["/app/start_redis.sh"]
+      command = [". /app/start_redis.sh"]
       env = {
         name = "VAULT_K8S_BACKEND"
         value = "${data.terraform_remote_state.k8s_cluster.vault_k8s_auth_backend}"
