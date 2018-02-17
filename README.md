@@ -2,7 +2,7 @@
 Terraform configuration for deploying Kubernetes pods and services to existing Kubernetes clusters in several public clouds.
 
 ## Introduction
-This Terraform configuration deploys two pods exposed as services. It is meant to be used in Terraform Enterprise (TFE). The first runs a python application called "cats-and-dogs" that lets users vote for their favorite type of pet. It stores data in the second which runs a redis database. The Terraform configuration replicates what a user could do with the [Kubernetes CLI](https://kubernetes.io/docs/tasks/tools/install-kubectl/), `kubectl`.
+This Terraform configuration deploys two pods which are exposed as services. It is meant to be used in Terraform Enterprise (TFE). The first runs a python application called "cats-and-dogs" that lets users vote for their favorite type of pet. It stores data in the second which runs a redis database. The Terraform configuration replicates what a user could do with the [Kubernetes CLI](https://kubernetes.io/docs/tasks/tools/install-kubectl/), `kubectl`.
 
 It uses the kubernetes_pod and kubernetes_service resources of Terraform's Kubernetes Provider to deploy the pods and services into a Kubernetes cluster previously provisioned by Terraform. It also uses the terraform_remote_state data source to copy the outputs of the targeted cluster's TFE workspace directly into the Kubernetes Provider block, avoiding the need to manually copy the outputs into variables of the TFE services workspace. Note that it also creates a Kubernetes service account called "cats-and-dogs" which the pods use.
 
