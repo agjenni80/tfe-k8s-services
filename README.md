@@ -15,6 +15,7 @@ Another important aspect of this configuration is that both the frontend applica
     - [tfe-k8s-cluster-acs](https://github.com/rberlind/tfe-k8s-cluster-acs).
 1. Set the tfe-organization variable in your workspace to the name of the TFE organization containing your Kubernetes cluster workspace.
 1. Set the k8s-cluster-workspace variable in your workspace to the name of the workspace you used to deploy your k8s cluster.
+1. Set the vault_addr variable in your workspace to the address of your Vault server including the protocol and port. For instance, http://kubernetes-vault-elb-1667455164.us-east-1.elb.amazonaws.com:8200.
 
 ## Deployment Steps
 Execute the following commands to deploy the pods and services to GKE:
