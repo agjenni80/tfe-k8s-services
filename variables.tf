@@ -7,6 +7,6 @@ variable "k8s_cluster_workspace" {
   description = "workspace to use for the k8s cluster"
 }
 
-variable "vault_address" {
+variable "vault_addr" {
   description = "address of Vault server including protocol and port"
 }
