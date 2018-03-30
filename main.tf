@@ -38,7 +38,7 @@ resource "kubernetes_pod" "cats-and-dogs-backend" {
       command = ["/app/start_redis.sh"]
       env = {
         name = "VAULT_ADDR"
-        value = "${var.vault_addr}"
+        value = "${data.terraform_remote_state.k8s_cluster.vault_addr}"
       }
       env = {
         name = "VAULT_K8S_BACKEND"
@@ -98,7 +98,7 @@ resource "kubernetes_pod" "cats-and-dogs-frontend" {
       }
       env = {
         name = "VAULT_ADDR"
-        value = "${var.vault_addr}"
+        value = "${data.terraform_remote_state.k8s_cluster.vault_addr}"
       }
       env = {
         name = "VAULT_K8S_BACKEND"
