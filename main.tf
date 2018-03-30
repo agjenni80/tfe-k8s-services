@@ -128,7 +128,7 @@ resource "kubernetes_pod" "cats-and-dogs-frontend" {
 
 resource "kubernetes_service" "cats-and-dogs-frontend" {
   metadata {
-    name = "cats-and-dogs-frontend-4"
+    name = "cats-and-dogs-frontend"
   }
   spec {
     selector {
