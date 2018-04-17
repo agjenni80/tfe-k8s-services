@@ -81,7 +81,7 @@ resource "kubernetes_pod" "cats-and-dogs-frontend" {
   spec {
     service_account_name = "cats-and-dogs"
     container {
-      image = "rberlind/cats-and-dogs:k8s-auth"
+      image = "rberlind/cats-and-dogs-frontend:k8s-auth"
       image_pull_policy = "Always"
       name  = "cats-and-dogs-frontend"
       env = {
