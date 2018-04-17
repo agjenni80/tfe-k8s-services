@@ -1,27 +1,20 @@
 terraform {
-  required_version = ">= 0.11.0"
+  required_version = ">= 0.11.5"
+}
+
+data "terraform_remote_state" "k8s_cluster" {
+  backend = "atlas"
+  config {
+    name = "${var.tfe_organization}/${var.k8s_cluster_workspace}"
+  }
 }
 
 provider "kubernetes" {
-  host = "${var.k8s_endpoint}"
-  client_certificate = "${base64decode(var.k8s_master_auth_client_certificate)}"
-  client_key = "${base64decode(var.k8s_master_auth_client_key)}"
-  cluster_ca_certificate = "${base64decode(var.k8s_master_auth_cluster_ca_certificate)}"
+  host = "${data.terraform_remote_state.k8s_cluster.k8s_endpoint}"
+  client_certificate = "${base64decode(data.terraform_remote_state.k8s_cluster.k8s_master_auth_client_certificate)}"
+  client_key = "${base64decode(data.terraform_remote_state.k8s_cluster.k8s_master_auth_client_key)}"
+  cluster_ca_certificate = "${base64decode(data.terraform_remote_state.k8s_cluster.k8s_master_auth_cluster_ca_certificate)}"
 }
-
-/*resource "kubernetes_namespace" "cats-and-dogs" {
-  metadata {
-    name = "cats-and-dogs"
-  }
-  depends_on = ["vault_generic_secret.role", "null_resource.auth_config" ]
-}
-
-resource "kubernetes_service_account" "cats-and-dogs" {
-  metadata {
-    name = "cats-and-dogs"
-    namespace = "${kubernetes_namespace.cats-and-dogs.metadata.0.name}"
-  }
-}*/
 
 resource "kubernetes_pod" "cats-and-dogs-backend" {
   metadata {
@@ -34,25 +27,24 @@ resource "kubernetes_pod" "cats-and-dogs-backend" {
   spec {
     service_account_name = "cats-and-dogs"
     container {
-      image = "rberlind/redis-pwd-from-vault:latest"
+      image = "rberlind/redis-pwd-from-vault:k8s-auth"
       name  = "cats-and-dogs-backend"
       command = ["/app/start_redis.sh"]
       env = {
+        name = "VAULT_ADDR"
+        value = "${data.terraform_remote_state.k8s_cluster.vault_addr}"
+      }
+      env = {
         name = "VAULT_K8S_BACKEND"
-        value = "${var.vault_k8s_auth_backend}"
+        value = "${data.terraform_remote_state.k8s_cluster.vault_k8s_auth_backend}"
       }
       env = {
         name = "VAULT_USER"
-        value = "${var.vault_user}"
+        value = "${data.terraform_remote_state.k8s_cluster.vault_user}"
       }
       env = {
         name = "K8S_TOKEN"
-        value_from {
-          secret_key_ref {
-            name = "${var.token_name}"
-            key = "token"
-          }
-        }
+        value = "${data.terraform_remote_state.k8s_cluster.cats_and_dogs_token}"
       }
       port {
         container_port = 6379
@@ -88,28 +80,27 @@ resource "kubernetes_pod" "cats-and-dogs-frontend" {
   spec {
     service_account_name = "cats-and-dogs"
     container {
-      image = "rberlind/cats-and-dogs:latest"
+      image = "rberlind/cats-and-dogs:k8s-auth"
       name  = "cats-and-dogs-frontend"
       env = {
         name = "REDIS"
         value = "cats-and-dogs-backend"
       }
       env = {
+        name = "VAULT_ADDR"
+        value = "${data.terraform_remote_state.k8s_cluster.vault_addr}"
+      }
+      env = {
         name = "VAULT_K8S_BACKEND"
-        value = "${var.vault_k8s_auth_backend}"
+        value = "${data.terraform_remote_state.k8s_cluster.vault_k8s_auth_backend}"
       }
       env = {
         name = "VAULT_USER"
-        value = "${var.vault_user}"
+        value = "${data.terraform_remote_state.k8s_cluster.vault_user}"
       }
       env = {
         name = "K8S_TOKEN"
-        value_from {
-          secret_key_ref {
-            name = "${var.token_name}"
-            key = "token"
-          }
-        }
+        value = "${data.terraform_remote_state.k8s_cluster.cats_and_dogs_token}"
       }
       port {
         container_port = 80
