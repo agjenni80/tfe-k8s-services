@@ -27,7 +27,7 @@ resource "kubernetes_pod" "cats-and-dogs-backend" {
   spec {
     service_account_name = "cats-and-dogs"
     container {
-      image = "rberlind/redis-pwd-from-vault:k8s-auth"
+      image = "rberlind/cats-and-dogs-backend:k8s-auth"
       image_pull_policy = "Always"
       name  = "cats-and-dogs-backend"
       command = ["/app/start_redis.sh"]
