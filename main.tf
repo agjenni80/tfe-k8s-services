@@ -28,6 +28,7 @@ resource "kubernetes_pod" "cats-and-dogs-backend" {
     service_account_name = "cats-and-dogs"
     container {
       image = "rberlind/redis-pwd-from-vault:k8s-auth"
+      image_pull_policy = "Always"
       name  = "cats-and-dogs-backend"
       command = ["/app/start_redis.sh"]
       env = {
@@ -81,6 +82,7 @@ resource "kubernetes_pod" "cats-and-dogs-frontend" {
     service_account_name = "cats-and-dogs"
     container {
       image = "rberlind/cats-and-dogs:k8s-auth"
+      image_pull_policy = "Always"
       name  = "cats-and-dogs-frontend"
       env = {
         name = "REDIS"
