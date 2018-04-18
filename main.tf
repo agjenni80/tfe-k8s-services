@@ -193,3 +193,24 @@ resource "kubernetes_service" "cats-and-dogs-frontend" {
     type = "LoadBalancer"
   }
 }
+
+resource "null_resource" "expose_route" {
+
+  provisioner "remote-exec" {
+    inline = [
+      "oc expose service cats-and-dogs-frontend --hostname=cats-and-dogs-frontend.${data.terraform_remote_state.k8s_cluster.master_public_ip}.xip.io"
+    ]
+  }
+
+  connection {
+    host = "${data.terraform_remote_state.k8s_cluster.master_public_dns}"
+    type = "ssh"
+    agent = false
+    user = "ec2-user"
+    private_key = "${var.private_key_data}"
+    bastion_host = "${data.terraform_remote_state.k8s_cluster.bastion_public_dns}"
+  }
+
+  depends_on = ["kubernetes_service.cats-and-dogs-frontend"]
+
+}
