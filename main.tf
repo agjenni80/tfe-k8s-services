@@ -28,7 +28,7 @@ resource "null_resource" "service_account" {
       "oc new-project cats-and-dogs --description=\"cats and dogs project\" --display-name=\"cats-and-dogs\"",
       "kubectl create -f cats-and-dogs.yaml",
       "kubectl get serviceaccount cats-and-dogs -o yaml > cats-and-dogs-service.yaml",
-      "kubectl get secret $(sed -n 14,14p cats-and-dogs-service.yaml | cut -d ':' -f 2 | sed 's/ //') -o yaml > cats-and-dogs-secret.yaml",
+      "kubectl get secret $(grep \"cats-and-dogs-token\" cats-and-dogs-service.yaml | cut -d ':' -f 2 | sed 's/ //') -o yaml > cats-and-dogs-secret.yaml",
       "sed -n 6,6p cats-and-dogs-secret.yaml | cut -d ':' -f 2 | sed 's/ //' | base64 -d > cats-and-dogs-token"
     ]
   }
