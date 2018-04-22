@@ -25,7 +25,7 @@ resource "kubernetes_namespace" "cats-and-dogs" {
 resource "kubernetes_service_account" "cats-and-dogs" {
   metadata {
     name = "cats-and-dogs"
-    namespace = "${kubernetes_namespace.cats-and-dogs.name}"
+    namespace = "${kubernetes_namespace.cats-and-dogs.metadata.0.name}"
   }
 }
 
