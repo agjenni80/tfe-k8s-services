@@ -16,16 +16,9 @@ provider "kubernetes" {
   cluster_ca_certificate = "${base64decode(data.terraform_remote_state.k8s_cluster.k8s_master_auth_cluster_ca_certificate)}"
 }
 
-resource "kubernetes_namespace" "cats-and-dogs" {
-  metadata {
-    name = "cats-and-dogs"
-  }
-}
-
 resource "kubernetes_service_account" "cats-and-dogs" {
   metadata {
     name = "cats-and-dogs"
-    namespace = "${kubernetes_namespace.cats-and-dogs.metadata.0.name}"
   }
 }
 
