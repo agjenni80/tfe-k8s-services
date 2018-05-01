@@ -74,7 +74,7 @@ resource "null_resource" "get_secret_name" {
 
 data "null_data_source" "retrieve_secret_name_from_file" {
   inputs = {
-    secret_name = "${chomp(file("cats-and-dogs-token"))}"
+    secret_name = "${chomp(file("cats-and-dogs-secret-name"))}"
   }
   depends_on = ["null_resource.get_secret_name"]
 }
