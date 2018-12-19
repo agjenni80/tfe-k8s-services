@@ -1,10 +1,10 @@
 variable "tfe_organization" {}
-variable "test_workspace" {}
+variable "k8s_cluster_workspace" {}
 
 data "terraform_remote_state" "test" {
   backend = "atlas"
   config {
-    name = "${var.tfe_organization}/${var.test_workspace}"
+    name = "${var.tfe_organization}/${var.k8s_cluster_workspace}"
   }
 }
 
