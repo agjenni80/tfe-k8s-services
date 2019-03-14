@@ -1,11 +1,18 @@
 terraform {
-  required_version = ">= 0.11.0"
+  required_version = ">= 0.11.11"
 }
 
 data "terraform_remote_state" "k8s_cluster" {
   backend = "atlas"
   config {
     name = "${var.tfe_organization}/${var.k8s_cluster_workspace}"
+  }
+}
+
+data "terraform_remote_state" "k8s_vault_config" {
+  backend = "atlas"
+  config {
+    name = "${var.tfe_organization}/${var.k8s_vault_config_workspace}"
   }
 }
 
@@ -42,7 +49,7 @@ resource "kubernetes_pod" "cats-and-dogs-backend" {
       }
       env = {
         name = "VAULT_K8S_BACKEND"
-        value = "${data.terraform_remote_state.k8s_cluster.vault_k8s_auth_backend}"
+        value = "${data.terraform_remote_state.k8s_vault_config.vault_k8s_auth_backend}"
       }
       env = {
         name = "VAULT_USER"
@@ -102,7 +109,7 @@ resource "kubernetes_pod" "cats-and-dogs-frontend" {
       }
       env = {
         name = "VAULT_K8S_BACKEND"
-        value = "${data.terraform_remote_state.k8s_cluster.vault_k8s_auth_backend}"
+        value = "${data.terraform_remote_state.k8s_vault_config.vault_k8s_auth_backend}"
       }
       env = {
         name = "VAULT_USER"
